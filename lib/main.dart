@@ -1,5 +1,6 @@
+// lib/main.dart
+
 import 'package:flutter/material.dart';
-import 'package:wordpair_generator/utils/generateMaterialColor.dart';
 import 'package:wordpair_generator/random_words.dart';
 
 void main() => runApp(const MyApp());
@@ -11,23 +12,26 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       theme: ThemeData(
-        primarySwatch:
-            generateMaterialColor(const Color.fromARGB(255, 27, 47, 124)),
-        brightness: Brightness.light,
+        useMaterial3: true,
+        colorScheme: ColorScheme.fromSeed(
+          seedColor: const Color(0xFF1A73E8),
+          brightness: Brightness.light,
+        ),
+        appBarTheme: const AppBarTheme(
+          backgroundColor: Color(0xFF1A73E8),
+          foregroundColor: Colors.white,
+        ),
       ),
       darkTheme: ThemeData(
-        primarySwatch:
-            generateMaterialColor(const Color.fromARGB(255, 27, 47, 124)),
-        brightness: Brightness.dark,
-        scaffoldBackgroundColor: Colors.grey[900],
+        useMaterial3: true,
+        colorScheme: ColorScheme.fromSeed(
+          seedColor: const Color(0xFF1A73E8),
+          brightness: Brightness.dark,
+        ),
         appBarTheme: AppBarTheme(
-          color: Colors.grey[850],
+          backgroundColor: Colors.grey[900],
+          foregroundColor: Colors.white,
         ),
-        textTheme: const TextTheme(
-          bodyLarge: TextStyle(color: Colors.white),
-          bodyMedium: TextStyle(color: Colors.white70),
-        ),
-        dividerColor: Colors.white24,
       ),
       themeMode: ThemeMode.system,
       home: const RandomWords(),
