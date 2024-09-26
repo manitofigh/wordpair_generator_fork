@@ -1,49 +1,53 @@
 import 'package:flutter/material.dart';
-import 'package:english_words/english_words.dart';
+import 'custom_words.dart';
 
 class RandomWords extends StatefulWidget {
+  const RandomWords({super.key});
+
   @override
   RandomWordsState createState() => RandomWordsState();
 }
 
 class RandomWordsState extends State<RandomWords> {
-  final _randomWordPairs = <WordPair>[];
-  final _savedWordPairs = Set<WordPair>();
+  final _savedWords = <CustomWord>{};
 
   Widget _buildList() {
     return ListView.builder(
       padding: const EdgeInsets.all(16.0),
+      itemCount: customWords.length * 2,
       itemBuilder: (context, item) {
-        if (item.isOdd) return Divider();
+        if (item.isOdd) return const Divider();
         final index = item ~/ 2;
-        if (index >= _randomWordPairs.length) {
-          _randomWordPairs.addAll(generateWordPairs().take(10));
-        }
-        return _buildRow(_randomWordPairs[index]);
+        return _buildRow(customWords[index]);
       },
     );
   }
 
-  Widget _buildRow(WordPair pair) {
-    final alreadySaved = _savedWordPairs.contains(pair);
+  Widget _buildRow(CustomWord word) {
+    final alreadySaved = _savedWords.contains(word);
 
     return ListTile(
       title: Text(
-        pair.asPascalCase,
+        word.word,
         style: const TextStyle(fontSize: 18),
       ),
       trailing: Icon(
-        alreadySaved ? Icons.favorite : Icons.favorite_border,
+        alreadySaved ? Icons.double_arrow : Icons.arrow_right,
         color: alreadySaved ? Colors.red : null,
       ),
       onTap: () {
         setState(() {
           if (alreadySaved) {
-            _savedWordPairs.remove(pair);
+            _savedWords.remove(word);
           } else {
-            _savedWordPairs.add(pair);
+            _savedWords.add(word);
           }
         });
+      },
+      onLongPress: () {
+        if (word == customWords.first) {
+          _pushDefinition(word);
+        }
       },
     );
   }
@@ -51,20 +55,36 @@ class RandomWordsState extends State<RandomWords> {
   void _pushSaved() {
     Navigator.of(context)
         .push(MaterialPageRoute(builder: (BuildContext context) {
-      final Iterable<ListTile> tiles = _savedWordPairs.map((WordPair pair) {
+      final Iterable<ListTile> tiles = _savedWords.map((CustomWord word) {
         return ListTile(
             title: Text(
-          pair.asPascalCase,
-          style: TextStyle(fontSize: 16.0),
+          word.word,
+          style: const TextStyle(fontSize: 16.0),
         ));
       });
 
       final List<Widget> divided =
           ListTile.divideTiles(context: context, tiles: tiles).toList();
       return Scaffold(
-        appBar: AppBar(title: Text('Saved WordPairs')),
+        appBar: AppBar(title: const Text('Saved Words')),
         body: ListView(
           children: divided,
+        ),
+      );
+    }));
+  }
+
+  void _pushDefinition(CustomWord word) {
+    Navigator.of(context)
+        .push(MaterialPageRoute(builder: (BuildContext context) {
+      return Scaffold(
+        appBar: AppBar(title: Text(word.word)),
+        body: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Text(
+            word.definition,
+            style: const TextStyle(fontSize: 18.0),
+          ),
         ),
       );
     }));
@@ -74,9 +94,9 @@ class RandomWordsState extends State<RandomWords> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('WordPair Generator'),
+        title: const Text('Custom Word List'),
         actions: <Widget>[
-          IconButton(onPressed: _pushSaved, icon: Icon(Icons.list))
+          IconButton(onPressed: _pushSaved, icon: const Icon(Icons.list))
         ],
       ),
       body: _buildList(),
