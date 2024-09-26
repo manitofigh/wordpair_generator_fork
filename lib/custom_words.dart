@@ -1,5 +1,3 @@
-// lib/custom_words.dart
-
 class CustomWord {
   final String word;
   final String definition;
